@@ -51,18 +51,18 @@ print("（ただいま戦闘中...）\n")
 
 ### 音声処理 ###
 
-AS = BS # 音声を加工する用のコピーを作成 (After Sound)
+PS = BS # 音声を加工する用のコピーを作成 (Processing Sound)
 LUFS=[] # 音量を上げたときのIntegrated Loudnessを記録するリスト
 c=0 # カウンター, 10回音量をいじってラウドネスが変わらなければ処理を終了
 
 for i in range(6165): # pydubは音量を最大 6165 dBまで上げれるっぽい
     
-    AS = BS + i # 音量を i dB上げる
-    AS.export("./processing.wav", format="wav") # 加工音源の上書き
+    PS = BS + i # 音量を i dB上げる
+    PS.export("./processing.wav", format="wav") # 加工音源の上書き
 
-    AfterAudio, rate = sf.read("processing.wav") # 加工音源を読み込み
-    meter = pyln.Meter(rate) # メーター再生成
-    LUFS.append(meter.integrated_loudness(AfterAudio)) # Integrated Loudnessの取得, 記録
+    ProcessingAudio, rate = sf.read("processing.wav") # 加工音源を読み込み
+    meter = pyln.Meter(rate)
+    LUFS.append(meter.integrated_loudness(ProcessingAudio)) # Integrated Loudnessの取得, 記録
 
     if i>=2: 
         if LUFS[i-1] == LUFS[i-2]: # カウンターのチェック
@@ -75,8 +75,8 @@ for i in range(6165): # pydubは音量を最大 6165 dBまで上げれるっぽ�
 max_value = max(LUFS) # ラウドネスの最大値を取得
 max_index = LUFS.index(max_value) # そのインデックスを取得
 
-AS = BS + max_index # 音割れさせる
-AS.export("音割れ" + FileName + ".wav", format="wav") # 音割れ音源の書き出し
+PS = BS + max_index
+PS.export("音割れ" + FileName + ".wav", format="wav")
 
 
 ### 結果表示 ###
@@ -88,7 +88,7 @@ print("・After: " + str(round(max_value, 3)) + " LUFS")
 print("・音量変化: +" + str(max_index) + "dB")
 print("・原曲との音圧の比率: ", str(round(pow(10, max_index/20), 3))) # （倍率）= 10^{(上げたデシベル)/20}
 print("\nまたいつでも呼ぶといいっ！\nサラバッ！！！")
-tada = AudioSegment.from_file(r"C:\Windows\media\tada.wav", format="wav")
+tada = AudioSegment.from_file(r"C:\Windows\media\tada.wav", format="wav") # 終了の通知
 play(tada)
 
 ans=input()
